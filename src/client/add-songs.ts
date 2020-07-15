@@ -1,17 +1,17 @@
 import _ from 'lodash';
-import client from './client';
-import { Song } from '../proto/songs_pb';
-import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
+import { songClient } from './client';
+import { songs, google } from '../proto/protoBundle';
 import inquirer from 'inquirer';
+import { createProtoMsgFromObject } from '../protoHelper';
 
-function addSongs(): (song: Song | null) => void {
-    const stream = client.addSongs((err, res: Empty) => {
+function addSongs(): (song: songs.Song | null) => void {
+    const stream = songClient.addSongs((err: Error, res: google.protobuf.Empty) => {
         if (err) {
             throw err;
         }
         _.noop(res);
     });
-    return (song: Song | null): void => {
+    return (song: songs.Song | null): void => {
         if (song == null) {
             stream.end();
             return;
@@ -20,7 +20,7 @@ function addSongs(): (song: Song | null) => void {
     };
 }
 
-async function inputSong(): Promise<Song> {
+async function inputSong(): Promise<songs.Song> {
     const answers = await inquirer.prompt([
         {
             name: 'title',
@@ -30,11 +30,17 @@ async function inputSong(): Promise<Song> {
             name: 'artist',
             message: 'Who is the artist?',
         },
+        {
+            name: 'genre',
+            message: 'What genre?',
+        },
     ]);
-    const song = new Song();
-    song.setTitle(answers.title);
-    song.setArtist(answers.artist);
-    return song;
+    const newSong = {
+        title: answers.title,
+        artist: answers.artist,
+        genre: answers.genre
+    }
+    return createProtoMsgFromObject(songs.Song, newSong);
 }
 
 async function shouldAddMore(): Promise<boolean> {

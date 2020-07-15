@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package genre;
+
+
+enum GENRE {
+  SG_UNKNOWN = 0;
+  SG_POP = 1;
+  SG_RAP = 2;
+  SG_COUNTRY = 3;
+  SG_AFROPOP = 4;
+  SG_AFROBEATS = 5;
+  SG_GOSPEL = 6;
+  SG_FUJI = 7;
+  SG_RnB = 8;
+}

@@ -1,15 +1,15 @@
-import { Comment } from '../proto/songs_pb';
+import { songs } from '../proto/protoBundle';
 import db from './db';
 
-export default async function(songId: number): Promise<Comment[]> {
-    const comments = db.get('comments').value() as Comment.AsObject[];
+export default async function(songId: number): Promise<songs.Comment[]> {
+    const comments = db.get('comments').value();
     return comments
         .filter(comment => comment.songId === songId)
         .map(c => {
-            const comment = new Comment();
-            comment.setSongId(c.songId);
-            comment.setBody(c.body);
-            comment.setUsername(c.username);
+            const comment = new songs.Comment();
+            comment.songId = c.songId;
+            comment.body = c.body;
+            comment.username = c.username;
             return comment;
         });
 }

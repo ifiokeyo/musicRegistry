@@ -1,37 +1,46 @@
-import grpc from 'grpc';
-import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
-import { Song, Comment } from '../proto/songs_pb';
-import { ISongsServer, SongsService } from '../proto/songs_grpc_pb';
+import { 
+    ServerUnaryCall, sendUnaryData, 
+    ServerReadableStream, ServerWritableStream, 
+    ServerDuplexStream, Server, ServerCredentials
+} from '@grpc/grpc-js';
+import { google, songs } from '../proto/protoBundle';
 import getSong from './get-song';
 import addSong from './add-song';
 import getChat from './get-chat';
 import { addComment, registerListener } from './live-chat';
 
-class SongsServer implements ISongsServer {
-    getSong(call: grpc.ServerUnaryCall<Empty>, callback: grpc.sendUnaryData<Song>): void {
+import{ loadProto } from '../protoHelper';
+
+const songProtoFile = 'proto/songs/songs.proto';
+
+const protoDescriptor: any = loadProto(songProtoFile).songs;
+
+
+const methodHandlers = {
+    getSong(call: ServerUnaryCall<null, google.protobuf.Empty>, callback: sendUnaryData<songs.Song>): void {
         console.log(`${new Date().toISOString()}    getSong`);
         callback(null, getSong());
-    }
-    addSongs(call: grpc.ServerReadableStream<Song>, callback: grpc.sendUnaryData<Empty>): void {
+    },
+    addSongs(call: ServerReadableStream<songs.Song, null>, callback: sendUnaryData<google.protobuf.Empty>): void {
         console.log(`${new Date().toISOString()}    addSongs`);
-        call.on('data', (song: Song) => {
+        call.on('data', (song: songs.Song) => {
             addSong(song);
         });
-        call.on('end', () => callback(null, new Empty()));
-    }
-    async getChat(call: grpc.ServerWritableStream<Song>): Promise<void> {
+        call.on('end', () => callback(null, new google.protobuf.Empty()));
+    },
+    async getChat(call: ServerWritableStream<songs.Song, songs.Comment>): Promise<void> {
         console.log(`${new Date().toISOString()}    getChat`);
-        const song = call.request as Song;
-        const comments = await getChat(song.getId());
+        const song = call.request as songs.Song;
+        const comments = await getChat(song.id);
         for (const comment of comments) {
             call.write(comment);
         }
         call.end();
-    }
-    liveChat(call: grpc.ServerDuplexStream<Comment, Comment>): void {
+    },
+    liveChat(call: ServerDuplexStream<songs.Comment, songs.Comment>): void {
         console.log(`${new Date().toISOString()}    liveChat`);
         registerListener(comment => call.write(comment));
-        call.on('data', (comment: Comment) => {
+        call.on('data', (comment: songs.Comment) => {
             addComment(comment);
         });
         call.on('end', () => call.end());
@@ -39,11 +48,24 @@ class SongsServer implements ISongsServer {
 }
 
 function serve(): void {
-    const server = new grpc.Server();
-    server.addService<ISongsServer>(SongsService, new SongsServer());
-    console.log(`Listening on ${process.env.PORT}`);
-    server.bind(`localhost:${process.env.PORT}`, grpc.ServerCredentials.createInsecure());
-    server.start();
+    const server: Server = new Server();
+
+    // register all the handler here...
+    server.addService(protoDescriptor.SongService.service, methodHandlers);
+
+    // define the host/port for server
+    server.bindAsync(
+        `localhost:${process.env.PORT}`,
+        ServerCredentials.createInsecure(),
+        (err: Error, port: number) => {
+            if (err != null) {
+                return console.error(err);
+            }
+            console.log(`gRPC listening on ${ port }`);
+            // start the gRPC server
+            server.start();
+        }
+    );  
 }
 
 export default {

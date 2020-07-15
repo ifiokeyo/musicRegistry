@@ -1,11 +1,10 @@
-import client from './client';
-import { Song } from '../proto/songs_pb';
-import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
+import { songClient } from './client';
+import { songs, google } from '../proto/protoBundle';
 import Table from 'cli-table';
 
-function getSong(): Promise<Song> {
-    return new Promise<Song>((resolve, reject) => {
-        client.getSong(new Empty(), (err, song) => {
+function getSong(): Promise<songs.Song> {
+    return new Promise<songs.Song>((resolve, reject) => {
+        songClient.getSong(new google.protobuf.Empty(), (err: Error, song) => {
             if (err) {
                 return reject(err);
             }
@@ -23,13 +22,16 @@ export default {
         const table = new Table();
         table.push(
             {
-                'Song ID': song.getId(),
+                'Song ID': song.id,
             },
             {
-                Title: song.getTitle(),
+                Title: song.title,
             },
             {
-                Artist: song.getArtist(),
+                Artist: song.artist,
+            },
+            {
+                Genre: song.genre,
             },
         );
         console.log(table.toString());

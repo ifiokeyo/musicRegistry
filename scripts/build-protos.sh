@@ -3,21 +3,22 @@
 BASEDIR=$(dirname "$0")
 cd ${BASEDIR}/../
 
+echo `pwd` 
+
 PROTO_DEST=./src/proto
 
 mkdir -p ${PROTO_DEST}
 
-# JavaScript code generation
-yarn run grpc_tools_node_protoc \
-    --js_out=import_style=commonjs,binary:${PROTO_DEST} \
-    --grpc_out=${PROTO_DEST} \
-    --plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \
-    -I ./proto \
-    proto/*.proto
+# Json code generation
+pbjs \
+    -t json-module -w es6 \
+    -o ${PROTO_DEST}/protoBundle.json.js \
+    protoDefintions/proto/common/genre.proto protoDefintions/proto/songs/songs.proto 
 
 # TypeScript code generation
-yarn run grpc_tools_node_protoc \
-    --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
-    --ts_out=${PROTO_DEST} \
-    -I ./proto \
-    proto/*.proto
+pbjs \
+    -t static-module -w es6 \
+    -o ${PROTO_DEST}/protoBundle.js \
+    protoDefintions/proto/common/genre.proto protoDefintions/proto/songs/songs.proto 
+
+pbts -o ${PROTO_DEST}/protoBundle.d.ts ${PROTO_DEST}/protoBundle.js

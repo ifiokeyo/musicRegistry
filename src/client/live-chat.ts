@@ -1,7 +1,8 @@
 import fs from 'fs';
 import inquirer from 'inquirer';
-import client from './client';
-import { Comment } from '../proto/songs_pb';
+import { songClient } from './client';
+import { songs } from '../proto/protoBundle';
+import { createProtoMsgFromObject } from '../protoHelper';
 
 async function liveChat(): Promise<void> {
     const { name, songId } = await inquirer.prompt([
@@ -14,12 +15,12 @@ async function liveChat(): Promise<void> {
             message: 'Which song do you want to discuss?',
         },
     ]);
-    const stream = client.liveChat();
+    const stream = songClient.liveChat();
     return new Promise(async (resolve, reject) => {
-        stream.on('data', (comment: Comment) => {
+        stream.on('data', (comment: songs.Comment) => {
             fs.writeFileSync(
-                `chat-${name}-${comment.getSongId()}.txt`,
-                `(${comment.getUsername()}) ${comment.getBody()}\n`,
+                `chat-${name}-${comment.songId}.txt`,
+                `(${comment.username}) ${comment.body}\n`,
                 {
                     flag: 'a',
                 },
@@ -35,10 +36,12 @@ async function liveChat(): Promise<void> {
                     message: 'Type message:',
                 },
             ]);
-            const comment = new Comment();
-            comment.setUsername(name);
-            comment.setBody(answer.message);
-            comment.setSongId(songId);
+            const comment = createProtoMsgFromObject(songs.Comment, {
+                username: name,
+                body: answer.message,
+                songId: songId
+
+            });
             stream.write(comment);
         }
     });

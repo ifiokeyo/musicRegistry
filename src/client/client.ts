@@ -1,4 +1,8 @@
-import grpc from 'grpc';
-import services from '../proto/songs_grpc_pb';
+import  { credentials } from '@grpc/grpc-js';
+import{ loadProto } from '../protoHelper';
 
-export default new services.SongsClient(`localhost:${process.env.PORT}`, grpc.credentials.createInsecure());
+const songProtoFile = 'proto/songs/songs.proto';
+
+const songs: any = loadProto(songProtoFile).songs;
+
+export const songClient = new songs.SongService(`localhost:${process.env.PORT}`, credentials.createInsecure());

@@ -8,52 +8,62 @@ db.defaults({
             id: 1,
             title: 'The Box',
             artist: 'Roddy Ricch',
+            genre: 'SG_RAP'
         },
         {
             id: 2,
             title: 'Life Is Good',
             artist: 'Future Featuring Drake',
+            genre: 'SG_RAP'
         },
         {
             id: 3,
             title: 'Circles',
             artist: 'Post Malone',
+            genre: 'SG_RAP'
         },
         {
             id: 4,
             title: 'Memories',
             artist: 'Maroon 5',
+            genre: 'SG_POP'
         },
         {
             id: 5,
             title: 'Someone You Loved',
             artist: 'Lewis Capaldi',
+            genre: 'SG_RnB'
         },
 
         {
             id: 6,
             title: '10,000 Hours',
             artist: 'Dan + Shay & Justin Bieber',
+            genre: 'SG_RnB'
         },
         {
             id: 7,
             title: 'Dance Monkey',
             artist: 'Tones And I',
+            genre: 'SG_COUNTRY'
         },
         {
             id: 8,
             title: 'Roxanne',
             artist: 'Arizona Zervas',
+            genre: 'SG_RAP'
         },
         {
             id: 9,
             title: "Don't Start Now",
             artist: 'Dua Lipa',
+            genre: 'SG_RAP'
         },
         {
             id: 10,
             title: 'everything i wanted',
             artist: 'Billie Eilish',
+            genre: 'SG_POP'
         },
     ],
     comments: [

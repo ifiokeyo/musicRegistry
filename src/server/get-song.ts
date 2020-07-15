@@ -1,12 +1,13 @@
-import { Song } from '../proto/songs_pb';
+import { songs } from '../proto/protoBundle';
 import db from './db';
 
-export default function(): Song {
-    const song = new Song();
-    const songs = db.get('songs').value() as Song.AsObject[];
-    const s = songs[Math.floor(Math.random() * songs.length)];
-    song.setId(s.id);
-    song.setTitle(s.title);
-    song.setArtist(s.artist);
+export default function(): songs.Song {
+    const song = new songs.Song();
+    const allSongs = db.get('songs').value();
+    const s = allSongs[Math.floor(Math.random() * allSongs.length)];
+    song.id = s.id;
+    song.title = s.title;
+    song.artist = s.artist;
+    song.genre = s.genre;
     return song;
 }

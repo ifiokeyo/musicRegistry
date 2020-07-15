@@ -11,20 +11,22 @@
         "@typescript-eslint/parser": "^2.19.0",
         "cli-table": "^0.3.1",
         "eslint": "^6.8.0",
-        "grpc": "^1.24.2",
-        "grpc-tools": "^1.8.1",
-        "grpc_tools_node_protoc_ts": "^2.5.10",
+        "@grpc/grpc-js": "^1.1.1",
+        "protobufjs": "^6.9.0",
+        "@grpc/proto-loader": "^0.5.4",
         "inquirer": "^7.0.4",
         "lodash": "^4.17.15",
         "lowdb": "^1.0.0",
         "typescript": "^3.7.5",
-        "yargs": "^15.1.0"
+        "yargs": "^15.1.0",
+        "@types/cli-table": "^0.3.0"
     },
     "scripts": {
         "lint": "yarn run eslint --fix --ext .ts src",
         "prebuild": "yarn run lint",
+        "generate_proto": "sh ./scripts/build-protos.sh",
         "clean": "rm -rf ./src/proto && mkdir -p ./src/proto && rm -f chat-*.txt && rm -f db.json",
-        "build": "sh ./scripts/build-protos.sh ./songs.proto ./src/proto && yarn run tsc",
+        "build": "rm -rf ./dist && yarn run generate_proto && yarn run tsc",
         "start": "PORT=6789 node ./dist/index.js"
     }
 }
