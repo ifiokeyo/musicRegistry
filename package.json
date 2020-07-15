@@ -1,7 +1,7 @@
 {
     "name": "grpc-ts-demo",
     "version": "1.0.0",
-    "author": "Mike Christensen",
+    "author": "Eyo",
     "license": "MIT",
     "dependencies": {
         "@types/inquirer": "^6.5.0",
