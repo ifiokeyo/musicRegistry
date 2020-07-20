@@ -12,13 +12,12 @@ mkdir -p ${PROTO_DEST}
 # Json code generation
 pbjs \
     -t json-module -w es6 \
-    -o ${PROTO_DEST}/protoBundle.json.js \
-    protoDefintions/proto/common/genre.proto protoDefintions/proto/songs/songs.proto 
+    -o ${PROTO_DEST}/protoBundle.json.js $(echo $(find protoDefintions/proto  -type f  -name '*.proto'))
 
 # TypeScript code generation
 pbjs \
     -t static-module -w es6 \
     -o ${PROTO_DEST}/protoBundle.js \
-    protoDefintions/proto/common/genre.proto protoDefintions/proto/songs/songs.proto 
+    $(echo $(find protoDefintions/proto  -type f  -name '*.proto')) 
 
 pbts -o ${PROTO_DEST}/protoBundle.d.ts ${PROTO_DEST}/protoBundle.js
