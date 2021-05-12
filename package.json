@@ -11,7 +11,7 @@
         "@typescript-eslint/parser": "^2.19.0",
         "cli-table": "^0.3.1",
         "eslint": "^6.8.0",
-        "@grpc/grpc-js": "^1.1.1",
+        "@grpc/grpc-js": "^1.1.8",
         "protobufjs": "^6.9.0",
         "@grpc/proto-loader": "^0.5.4",
         "inquirer": "^7.0.4",
